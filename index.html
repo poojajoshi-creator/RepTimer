@@ -5,17 +5,74 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>RepTimer</title>
 
-  <!-- iOS home screen app behaviour -->
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="RepTimer" />
-
-  <!-- App icon shown on home screen (180x180 is the iOS recommended size) -->
-  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='40' fill='%23639922'/%3E%3Ctext x='90' y='115' font-size='90' text-anchor='middle' font-family='system-ui' fill='white'%3E⏱%3C/text%3E%3C/svg%3E" />
-
-  <!-- Android / generic PWA -->
   <meta name="mobile-web-app-capable" content="yes" />
-  <meta name="theme-color" content="rgb(99,153,34)" />
+  <meta name="theme-color" content="#639922" />
+
+  <!-- Icon injected as PNG via canvas — iOS requires PNG, not SVG -->
+  <script>
+    (function() {
+      var c = document.createElement('canvas');
+      c.width = 180; c.height = 180;
+      var ctx = c.getContext('2d');
+      var r = 40;
+      // Rounded rect background
+      ctx.beginPath();
+      ctx.moveTo(r, 0); ctx.lineTo(180-r, 0);
+      ctx.arcTo(180, 0, 180, r, r);
+      ctx.lineTo(180, 180-r);
+      ctx.arcTo(180, 180, 180-r, 180, r);
+      ctx.lineTo(r, 180);
+      ctx.arcTo(0, 180, 0, 180-r, r);
+      ctx.lineTo(0, r);
+      ctx.arcTo(0, 0, r, 0, r);
+      ctx.closePath();
+      ctx.fillStyle = '#639922';
+      ctx.fill();
+      // Outer dark circle
+      ctx.beginPath(); ctx.arc(90, 97, 52, 0, Math.PI*2);
+      ctx.fillStyle = '#4a7518'; ctx.fill();
+      // Clock face
+      ctx.beginPath(); ctx.arc(90, 97, 44, 0, Math.PI*2);
+      ctx.fillStyle = 'rgba(255,255,255,0.13)'; ctx.fill();
+      ctx.beginPath(); ctx.arc(90, 97, 38, 0, Math.PI*2);
+      ctx.fillStyle = 'rgba(255,255,255,0.09)'; ctx.fill();
+      // Tick marks
+      ctx.strokeStyle = 'white'; ctx.lineCap = 'round';
+      [[90,58,90,63],[90,131,90,136],[51,97,56,97],[124,97,129,97]].forEach(function(t){
+        ctx.beginPath(); ctx.lineWidth=2.5;
+        ctx.moveTo(t[0],t[1]); ctx.lineTo(t[2],t[3]); ctx.stroke();
+      });
+      // Minute hand (pointing up)
+      ctx.beginPath(); ctx.lineWidth=4;
+      ctx.moveTo(90,97); ctx.lineTo(90,67); ctx.stroke();
+      // Hour hand (pointing to ~4 o'clock)
+      ctx.beginPath(); ctx.lineWidth=3;
+      ctx.moveTo(90,97); ctx.lineTo(112,108); ctx.stroke();
+      // Center dot
+      ctx.beginPath(); ctx.arc(90,97,4,0,Math.PI*2);
+      ctx.fillStyle='white'; ctx.fill();
+      // Crown at top
+      ctx.beginPath();
+      ctx.roundRect ? (function(){
+        ctx.roundRect(82,30,16,8,4); ctx.fillStyle='white'; ctx.fill();
+      })() : (function(){
+        ctx.rect(82,30,16,8); ctx.fillStyle='white'; ctx.fill();
+      })();
+      // Side button
+      ctx.beginPath(); ctx.arc(118,47,5,0,Math.PI*2);
+      ctx.fillStyle='white'; ctx.fill();
+      ctx.beginPath(); ctx.lineWidth=2.5;
+      ctx.moveTo(114,51); ctx.lineTo(118,47); ctx.stroke();
+
+      var link = document.createElement('link');
+      link.rel = 'apple-touch-icon';
+      link.href = c.toDataURL('image/png');
+      document.head.appendChild(link);
+    })();
+  </script>
 
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css" />
   <style>
@@ -57,11 +114,7 @@
       }
     }
 
-    html, body {
-      height: 100%;
-      /* Prevent iOS rubber-band scrolling */
-      overscroll-behavior: none;
-    }
+    html, body { height: 100%; overscroll-behavior: none; }
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -72,7 +125,6 @@
       display: flex;
       align-items: flex-start;
       justify-content: center;
-      /* Safe area insets for iPhone notch / Dynamic Island */
       padding: max(2rem, env(safe-area-inset-top)) 1rem max(1rem, env(safe-area-inset-bottom));
     }
 
@@ -251,9 +303,7 @@ function unlockAudio() {
     if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     const buf = audioCtx.createBuffer(1, 1, 22050);
     const src = audioCtx.createBufferSource();
-    src.buffer = buf;
-    src.connect(audioCtx.destination);
-    src.start(0);
+    src.buffer = buf; src.connect(audioCtx.destination); src.start(0);
     if (audioCtx.state === 'suspended') audioCtx.resume();
     audioUnlocked = true;
   } catch(e) {}
@@ -342,17 +392,13 @@ function soundDone() {
 
 function showAlert(msg, type) {
   const el = document.getElementById('alert-banner');
-  el.textContent = msg;
-  el.className = 'alert-banner alert-' + type;
-  el.style.display = 'block';
+  el.textContent = msg; el.className = 'alert-banner alert-' + type; el.style.display = 'block';
   setTimeout(() => { el.style.display = 'none'; }, 2500);
 }
 
 function fmt(s) {
   s = Math.max(0, Math.floor(s));
-  if (s >= 3600) {
-    return [Math.floor(s/3600), Math.floor((s%3600)/60), s%60].map(n => String(n).padStart(2,'0')).join(':');
-  }
+  if (s >= 3600) return [Math.floor(s/3600), Math.floor((s%3600)/60), s%60].map(n => String(n).padStart(2,'0')).join(':');
   return [Math.floor(s/60), s%60].map(n => String(n).padStart(2,'0')).join(':');
 }
 
@@ -363,8 +409,7 @@ function fmtLabel(s) {
 }
 
 function fmtDuration(s) {
-  const parts = [];
-  const h = Math.floor(s/3600), m = Math.floor((s%3600)/60), sec = s%60;
+  const parts = [], h = Math.floor(s/3600), m = Math.floor((s%3600)/60), sec = s%60;
   if (h) parts.push(h + 'h');
   if (m) parts.push(m + 'm');
   if (sec || !parts.length) parts.push(sec + 's');
@@ -407,8 +452,7 @@ function updateUI() {
 }
 
 function tick() {
-  phaseRemaining--;
-  sessionElapsed++;
+  phaseRemaining--; sessionElapsed++;
   if (phaseRemaining <= 0) {
     if (phase === 'work') {
       roundsDone++;
