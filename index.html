@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RepTimer — Workout Interval Timer</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #ffffff;
+      --bg-secondary: #f4f4f2;
+      --bg-success: #eaf3de;
+      --bg-warning: #faeeda;
+      --bg-info: #e6f1fb;
+      --text: #1a1a18;
+      --text-secondary: #5f5e5a;
+      --text-tertiary: #888780;
+      --text-success: #3b6d11;
+      --text-warning: #854f0b;
+      --text-info: #185fa5;
+      --border: rgba(0,0,0,0.15);
+      --border-med: rgba(0,0,0,0.25);
+      --radius: 8px;
+      --radius-lg: 12px;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #1c1c1a;
+        --bg-secondary: #2a2a28;
+        --bg-success: #173404;
+        --bg-warning: #412402;
+        --bg-info: #042c53;
+        --text: #f0ede8;
+        --text-secondary: #b4b2a9;
+        --text-tertiary: #888780;
+        --text-success: #c0dd97;
+        --text-warning: #fac775;
+        --text-info: #b5d4f4;
+        --border: rgba(255,255,255,0.12);
+        --border-med: rgba(255,255,255,0.22);
+      }
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg-secondary);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 2rem 1rem;
+    }
+
+    .card {
+      background: var(--bg);
+      border-radius: var(--radius-lg);
+      border: 0.5px solid var(--border);
+      padding: 2rem;
+      width: 100%;
+      max-width: 560px;
+    }
+
+    h1 {
+      font-size: 22px;
+      font-weight: 500;
+      color: var(--text);
+      margin-bottom: 0.25rem;
+    }
+
+    .subtitle {
+      font-size: 13px;
+      color: var(--text-tertiary);
+      margin-bottom: 1.75rem;
+    }
+
+    .input-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 14px;
+      margin-bottom: 0.75rem;
+    }
+
+    .input-group { display: flex; flex-direction: column; gap: 6px; }
+
+    label {
+      font-size: 12px;
+      color: var(--text-secondary);
+      display: block;
+    }
+
+    input[type="number"] {
+      width: 100%;
+      height: 48px;
+      font-size: 22px;
+      font-weight: 500;
+      padding: 0 10px;
+      border: 0.5px solid var(--border-med);
+      border-radius: var(--radius);
+      background: var(--bg);
+      color: var(--text);
+      outline: none;
+      text-align: center;
+      -moz-appearance: textfield;
+    }
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
+    input[type="number"]:focus { box-shadow: 0 0 0 2px var(--border-med); }
+
+    select {
+      width: 100%;
+      height: 34px;
+      font-size: 13px;
+      padding: 0 8px;
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--bg-secondary);
+      color: var(--text-secondary);
+      outline: none;
+    }
+    select:focus { box-shadow: 0 0 0 2px var(--border-med); }
+
+    .duration-pill {
+      text-align: center;
+      font-size: 13px;
+      color: var(--text-secondary);
+      background: var(--bg-secondary);
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 8px 16px;
+      margin-bottom: 1.5rem;
+    }
+    .duration-pill span { font-weight: 500; color: var(--text); }
+
+    .stat-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 1rem;
+    }
+    .stat-card {
+      flex: 1;
+      background: var(--bg-secondary);
+      border-radius: var(--radius);
+      padding: 0.6rem 0.75rem;
+      text-align: center;
+    }
+    .stat-val { font-size: 18px; font-weight: 500; color: var(--text); }
+    .stat-lbl { font-size: 11px; color: var(--text-tertiary); margin-top: 2px; }
+
+    .alert-banner {
+      display: none;
+      text-align: center;
+      padding: 10px 16px;
+      border-radius: var(--radius);
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 1rem;
+    }
+    .alert-work { background: var(--bg-success); color: var(--text-success); }
+    .alert-rest { background: var(--bg-warning); color: var(--text-warning); }
+    .alert-done { background: var(--bg-info); color: var(--text-info); }
+
+    .big-clock {
+      text-align: center;
+      font-size: 64px;
+      font-weight: 500;
+      letter-spacing: 3px;
+      color: var(--text);
+      margin: 1.25rem 0 0.25rem;
+      font-family: ui-monospace, "SF Mono", "Courier New", monospace;
+    }
+
+    .phase-label {
+      text-align: center;
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin-bottom: 0.5rem;
+      min-height: 20px;
+    }
+
+    .progress-bar-bg {
+      background: var(--bg-secondary);
+      border-radius: 99px;
+      height: 8px;
+      margin: 0.75rem 0 1.5rem;
+      overflow: hidden;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      border-radius: 99px;
+      transition: width 0.5s linear, background 0.4s;
+      width: 0%;
+      background: var(--bg-success);
+    }
+
+    .controls {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-bottom: 1.5rem;
+    }
+    button {
+      padding: 10px 28px;
+      font-size: 14px;
+      border: 0.5px solid var(--border-med);
+      border-radius: var(--radius);
+      background: transparent;
+      color: var(--text);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.15s;
+    }
+    button:hover { background: var(--bg-secondary); }
+    button:active { transform: scale(0.98); }
+    button i { font-size: 16px; }
+
+    .log-box {
+      background: var(--bg-secondary);
+      border-radius: var(--radius);
+      border: 0.5px solid var(--border);
+      padding: 0.75rem 1rem;
+      max-height: 150px;
+      overflow-y: auto;
+    }
+    .log-entry {
+      font-size: 12px;
+      color: var(--text-tertiary);
+      padding: 3px 0;
+      border-bottom: 0.5px solid var(--border);
+    }
+    .log-entry:last-child { border-bottom: none; }
+    .log-entry.ring { color: var(--text-success); font-weight: 500; }
+    .log-entry.done { color: var(--text-info); font-weight: 500; }
+
+    @media (max-width: 420px) {
+      .card { padding: 1.25rem; }
+      .big-clock { font-size: 48px; }
+      .input-row { gap: 8px; }
+    }
+  </style>
+</head>
+<body>
+<div class="card">
+  <h1>RepTimer</h1>
+  <p class="subtitle">Workout interval timer — set your reps, work, and rest</p>
+
+  <div class="input-row">
+    <div class="input-group">
+      <label for="reps">Reps</label>
+      <input type="number" id="reps" min="1" max="999" value="12" step="1" oninput="updateDuration()" />
+    </div>
+    <div class="input-group">
+      <label for="interval">Work interval</label>
+      <input type="number" id="interval" min="1" max="9999" value="1" step="1" oninput="updateDuration()" />
+      <select id="interval-unit" onchange="updateDuration()">
+        <option value="3600">hours</option>
+        <option value="60" selected>minutes</option>
+        <option value="1">seconds</option>
+      </select>
+    </div>
+    <div class="input-group">
+      <label for="rest">Rest period</label>
+      <input type="number" id="rest" min="0" max="9999" value="10" step="1" oninput="updateDuration()" />
+      <select id="rest-unit" onchange="updateDuration()">
+        <option value="3600">hours</option>
+        <option value="60">minutes</option>
+        <option value="1" selected>seconds</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="duration-pill">Total session: <span id="duration-display">—</span></div>
+
+  <div class="stat-row" id="stat-row" style="display:none;">
+    <div class="stat-card"><div class="stat-val" id="s-rounds">—</div><div class="stat-lbl">reps</div></div>
+    <div class="stat-card"><div class="stat-val" id="s-done">0</div><div class="stat-lbl">completed</div></div>
+    <div class="stat-card"><div class="stat-val" id="s-left">—</div><div class="stat-lbl">time left</div></div>
+  </div>
+
+  <div class="alert-banner" id="alert-banner"></div>
+  <div class="big-clock" id="clock">00:00</div>
+  <div class="phase-label" id="phase-label"></div>
+  <div class="progress-bar-bg" id="prog-bg" style="display:none;">
+    <div class="progress-bar-fill" id="prog-fill"></div>
+  </div>
+
+  <div class="controls">
+    <button id="btn-start" onclick="startTimer()"><i class="ti ti-player-play"></i> Start</button>
+    <button id="btn-pause" onclick="pauseTimer()" style="display:none;"><i class="ti ti-player-pause"></i> Pause</button>
+    <button id="btn-reset" onclick="resetTimer()" style="display:none;"><i class="ti ti-refresh"></i> Reset</button>
+  </div>
+
+  <div class="log-box" id="log-box" style="display:none;">
+    <div id="log-inner"></div>
+  </div>
+</div>
+
+<script>
+let ticker = null, running = false;
+let totalSec = 0, elapsed = 0, intervalSec = 0, restSec = 0;
+let phase = 'work', phaseElapsed = 0, roundsDone = 0, totalRounds = 0;
+let audioCtx = null, restMelodyNodes = [], restMelodyTimer = null;
+
+function getAudio() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  return audioCtx;
+}
+
+function soundWorkStart() {
+  try {
+    const ctx = getAudio();
+    [523, 659, 784].forEach((freq, i) => {
+      const o = ctx.createOscillator(), g = ctx.createGain();
+      o.connect(g); g.connect(ctx.destination);
+      o.type = 'square'; o.frequency.value = freq;
+      const t = ctx.currentTime + i * 0.22;
+      g.gain.setValueAtTime(0, t);
+      g.gain.linearRampToValueAtTime(0.35, t + 0.01);
+      g.gain.exponentialRampToValueAtTime(0.001, t + 0.18);
+      o.start(t); o.stop(t + 0.2);
+    });
+  } catch(e) {}
+}
+
+function soundRestStart() {
+  try {
+    const ctx = getAudio();
+    [659, 440].forEach((freq, i) => {
+      const o = ctx.createOscillator(), g = ctx.createGain();
+      o.connect(g); g.connect(ctx.destination);
+      o.type = 'sine'; o.frequency.value = freq;
+      const t = ctx.currentTime + i * 0.85;
+      g.gain.setValueAtTime(0.4, t);
+      g.gain.exponentialRampToValueAtTime(0.001, t + 0.7);
+      o.start(t); o.stop(t + 0.75);
+    });
+  } catch(e) {}
+}
+
+function startRestMelody() {
+  stopRestMelody();
+  const melody = [392, 440, 523, 440, 392, 349, 392, 440];
+  let idx = 0;
+  function playNote() {
+    if (phase !== 'rest' || !running) return;
+    try {
+      const ctx = getAudio();
+      const o = ctx.createOscillator(), g = ctx.createGain();
+      o.connect(g); g.connect(ctx.destination);
+      o.type = 'sine'; o.frequency.value = melody[idx++ % melody.length];
+      g.gain.setValueAtTime(0, ctx.currentTime);
+      g.gain.linearRampToValueAtTime(0.18, ctx.currentTime + 0.05);
+      g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.55);
+      o.start(ctx.currentTime); o.stop(ctx.currentTime + 0.6);
+      restMelodyNodes.push(o);
+    } catch(e) {}
+    restMelodyTimer = setTimeout(playNote, 620);
+  }
+  restMelodyTimer = setTimeout(playNote, 1800);
+}
+
+function stopRestMelody() {
+  if (restMelodyTimer) { clearTimeout(restMelodyTimer); restMelodyTimer = null; }
+  restMelodyNodes.forEach(o => { try { o.stop(); } catch(e) {} });
+  restMelodyNodes = [];
+}
+
+function soundDone() {
+  try {
+    const ctx = getAudio();
+    [523, 659, 784, 1047].forEach((freq, i) => {
+      const o = ctx.createOscillator(), g = ctx.createGain();
+      o.connect(g); g.connect(ctx.destination);
+      const t = ctx.currentTime + i * 0.22;
+      const dur = i === 3 ? 1.2 : 0.2;
+      o.type = i === 3 ? 'sine' : 'triangle'; o.frequency.value = freq;
+      g.gain.setValueAtTime(0.35, t);
+      g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+      o.start(t); o.stop(t + dur + 0.05);
+    });
+  } catch(e) {}
+}
+
+function showAlert(msg, type) {
+  const el = document.getElementById('alert-banner');
+  el.textContent = msg;
+  el.className = 'alert-banner alert-' + type;
+  el.style.display = 'block';
+  setTimeout(() => { el.style.display = 'none'; }, 3000);
+}
+
+function fmt(s) {
+  s = Math.max(0, Math.floor(s));
+  if (s >= 3600) {
+    return [Math.floor(s/3600), Math.floor((s%3600)/60), s%60].map(n => String(n).padStart(2,'0')).join(':');
+  }
+  return [Math.floor(s/60), s%60].map(n => String(n).padStart(2,'0')).join(':');
+}
+
+function fmtLabel(s) {
+  if (s >= 3600) return (s/3600).toFixed(1).replace(/\.0$/,'') + 'h';
+  if (s >= 60) return Math.round(s/60) + 'm';
+  return s + 's';
+}
+
+function fmtDuration(s) {
+  const parts = [];
+  const h = Math.floor(s/3600), m = Math.floor((s%3600)/60), sec = s%60;
+  if (h) parts.push(h + 'h');
+  if (m) parts.push(m + 'm');
+  if (sec || !parts.length) parts.push(sec + 's');
+  return parts.join(' ');
+}
+
+function getSecs(id, unitId) {
+  return Math.round((parseFloat(document.getElementById(id).value) || 0) * parseInt(document.getElementById(unitId).value));
+}
+
+function updateDuration() {
+  const reps = parseInt(document.getElementById('reps').value) || 0;
+  const intv = getSecs('interval', 'interval-unit');
+  const rst = getSecs('rest', 'rest-unit');
+  document.getElementById('duration-display').textContent =
+    (reps > 0 && intv > 0) ? fmtDuration(reps * intv + Math.max(0, reps - 1) * rst) : '—';
+}
+
+function addLog(msg, cls) {
+  const el = document.createElement('div');
+  el.className = 'log-entry' + (cls ? ' ' + cls : '');
+  el.textContent = new Date().toLocaleTimeString('en-US', {hour:'2-digit',minute:'2-digit',second:'2-digit'}) + '  ' + msg;
+  const inner = document.getElementById('log-inner');
+  inner.insertBefore(el, inner.firstChild);
+}
+
+function updateUI() {
+  const left = totalSec - elapsed;
+  document.getElementById('clock').textContent = fmt(left);
+  document.getElementById('s-left').textContent = fmt(left);
+  document.getElementById('s-done').textContent = roundsDone;
+  const phaseDur = phase === 'work' ? intervalSec : restSec;
+  const pct = phaseDur > 0 ? Math.min(100, phaseElapsed / phaseDur * 100) : 100;
+  const fill = document.getElementById('prog-fill');
+  fill.style.width = pct + '%';
+  fill.style.background = phase === 'work' ? '#639922' : '#ba7517';
+  document.getElementById('phase-label').textContent = phase === 'work'
+    ? 'Work — rep ' + (roundsDone + 1) + ' of ' + totalRounds
+    : 'Rest — next rep in ' + fmt(restSec - phaseElapsed);
+}
+
+function tick() {
+  elapsed++; phaseElapsed++;
+  const phaseDur = phase === 'work' ? intervalSec : restSec;
+  if (phaseElapsed >= phaseDur) {
+    if (phase === 'work') {
+      roundsDone++;
+      if (roundsDone >= totalRounds) { finishTimer(); return; }
+      if (restSec > 0) {
+        soundRestStart(); startRestMelody();
+        showAlert('Rest! Rep ' + roundsDone + ' done.', 'rest');
+        addLog('🔔 End of rep ' + roundsDone + ' — rest!', 'ring');
+        phase = 'rest'; phaseElapsed = 0;
+      } else {
+        soundWorkStart();
+        showAlert('Go! Rep ' + (roundsDone + 1) + '!', 'work');
+        addLog('🔔 Rep ' + (roundsDone + 1) + ' — go!', 'ring');
+        phaseElapsed = 0;
+      }
+    } else {
+      stopRestMelody(); soundWorkStart();
+      showAlert('Go! Rep ' + (roundsDone + 1) + '!', 'work');
+      addLog('🔔 Rep ' + (roundsDone + 1) + ' — go!', 'ring');
+      phase = 'work'; phaseElapsed = 0;
+    }
+  }
+  updateUI();
+}
+
+function finishTimer() {
+  clearInterval(ticker); running = false;
+  stopRestMelody(); soundDone();
+  showAlert('Session complete! Great work!', 'done');
+  document.getElementById('clock').textContent = '00:00';
+  document.getElementById('phase-label').textContent = 'Session complete! ' + totalRounds + ' reps done.';
+  document.getElementById('prog-fill').style.width = '100%';
+  document.getElementById('prog-fill').style.background = '#185fa5';
+  addLog('✅ Session complete — ' + totalRounds + ' reps done.', 'done');
+  document.getElementById('btn-pause').style.display = 'none';
+  document.getElementById('btn-start').style.display = 'none';
+  document.getElementById('btn-reset').style.display = '';
+}
+
+function startTimer() {
+  if (!running && elapsed === 0) {
+    totalRounds = parseInt(document.getElementById('reps').value) || 0;
+    intervalSec = getSecs('interval', 'interval-unit');
+    restSec = getSecs('rest', 'rest-unit');
+    if (totalRounds < 1 || intervalSec < 1) return;
+    totalSec = totalRounds * intervalSec + Math.max(0, totalRounds - 1) * restSec;
+    phase = 'work'; phaseElapsed = 0; elapsed = 0; roundsDone = 0;
+    document.getElementById('s-rounds').textContent = totalRounds;
+    document.getElementById('s-done').textContent = 0;
+    document.getElementById('s-left').textContent = fmt(totalSec);
+    document.getElementById('stat-row').style.display = '';
+    document.getElementById('prog-bg').style.display = '';
+    document.getElementById('log-box').style.display = '';
+    document.getElementById('log-inner').innerHTML = '';
+    addLog('▶ Session started — ' + totalRounds + ' reps × ' + fmtLabel(intervalSec) + ' work / ' + fmtLabel(restSec) + ' rest');
+    soundWorkStart();
+    showAlert('Go! Rep 1!', 'work');
+    addLog('🔔 Rep 1 — go!', 'ring');
+  }
+  running = true;
+  ticker = setInterval(tick, 1000);
+  document.getElementById('btn-start').style.display = 'none';
+  document.getElementById('btn-pause').style.display = '';
+  document.getElementById('btn-reset').style.display = '';
+  updateUI();
+}
+
+function pauseTimer() {
+  if (running) {
+    clearInterval(ticker); running = false; stopRestMelody();
+    addLog('⏸ Paused');
+    document.getElementById('btn-pause').style.display = 'none';
+    document.getElementById('btn-start').innerHTML = '<i class="ti ti-player-play"></i> Resume';
+    document.getElementById('btn-start').style.display = '';
+  }
+}
+
+function resetTimer() {
+  clearInterval(ticker); running = false; stopRestMelody();
+  elapsed = 0; phaseElapsed = 0; roundsDone = 0; phase = 'work';
+  document.getElementById('clock').textContent = '00:00';
+  document.getElementById('phase-label').textContent = '';
+  document.getElementById('prog-fill').style.width = '0%';
+  document.getElementById('alert-banner').style.display = 'none';
+  document.getElementById('stat-row').style.display = 'none';
+  document.getElementById('prog-bg').style.display = 'none';
+  document.getElementById('log-box').style.display = 'none';
+  document.getElementById('btn-start').innerHTML = '<i class="ti ti-player-play"></i> Start';
+  document.getElementById('btn-start').style.display = '';
+  document.getElementById('btn-pause').style.display = 'none';
+  document.getElementById('btn-reset').style.display = 'none';
+  updateDuration();
+}
+
+updateDuration();
+</script>
+</body>
+</html>
