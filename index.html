@@ -64,182 +64,95 @@
       max-width: 560px;
     }
 
-    h1 {
-      font-size: 22px;
-      font-weight: 500;
-      color: var(--text);
-      margin-bottom: 0.25rem;
-    }
+    h1 { font-size: 22px; font-weight: 500; color: var(--text); margin-bottom: 0.25rem; }
+    .subtitle { font-size: 13px; color: var(--text-tertiary); margin-bottom: 1.75rem; }
 
-    .subtitle {
-      font-size: 13px;
-      color: var(--text-tertiary);
-      margin-bottom: 1.75rem;
-    }
-
-    .input-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 14px;
-      margin-bottom: 0.75rem;
-    }
-
+    .input-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-bottom: 0.75rem; }
     .input-group { display: flex; flex-direction: column; gap: 6px; }
-
-    label {
-      font-size: 12px;
-      color: var(--text-secondary);
-      display: block;
-    }
+    label { font-size: 12px; color: var(--text-secondary); display: block; }
 
     input[type="number"] {
-      width: 100%;
-      height: 48px;
-      font-size: 22px;
-      font-weight: 500;
-      padding: 0 10px;
-      border: 0.5px solid var(--border-med);
-      border-radius: var(--radius);
-      background: var(--bg);
-      color: var(--text);
-      outline: none;
-      text-align: center;
-      -moz-appearance: textfield;
+      width: 100%; height: 48px; font-size: 22px; font-weight: 500;
+      padding: 0 10px; border: 0.5px solid var(--border-med);
+      border-radius: var(--radius); background: var(--bg); color: var(--text);
+      outline: none; text-align: center; -moz-appearance: textfield;
     }
     input[type="number"]::-webkit-inner-spin-button,
     input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
     input[type="number"]:focus { box-shadow: 0 0 0 2px var(--border-med); }
 
     select {
-      width: 100%;
-      height: 34px;
-      font-size: 13px;
-      padding: 0 8px;
-      border: 0.5px solid var(--border);
-      border-radius: var(--radius);
-      background: var(--bg-secondary);
-      color: var(--text-secondary);
-      outline: none;
+      width: 100%; height: 34px; font-size: 13px; padding: 0 8px;
+      border: 0.5px solid var(--border); border-radius: var(--radius);
+      background: var(--bg-secondary); color: var(--text-secondary); outline: none;
     }
     select:focus { box-shadow: 0 0 0 2px var(--border-med); }
 
     .duration-pill {
-      text-align: center;
-      font-size: 13px;
-      color: var(--text-secondary);
-      background: var(--bg-secondary);
-      border: 0.5px solid var(--border);
-      border-radius: var(--radius);
-      padding: 8px 16px;
-      margin-bottom: 1.5rem;
+      text-align: center; font-size: 13px; color: var(--text-secondary);
+      background: var(--bg-secondary); border: 0.5px solid var(--border);
+      border-radius: var(--radius); padding: 8px 16px; margin-bottom: 1.5rem;
     }
     .duration-pill span { font-weight: 500; color: var(--text); }
 
-    .stat-row {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 1rem;
-    }
-    .stat-card {
-      flex: 1;
-      background: var(--bg-secondary);
-      border-radius: var(--radius);
-      padding: 0.6rem 0.75rem;
-      text-align: center;
-    }
+    .stat-row { display: flex; gap: 10px; margin-bottom: 1rem; }
+    .stat-card { flex: 1; background: var(--bg-secondary); border-radius: var(--radius); padding: 0.6rem 0.75rem; text-align: center; }
     .stat-val { font-size: 18px; font-weight: 500; color: var(--text); }
     .stat-lbl { font-size: 11px; color: var(--text-tertiary); margin-top: 2px; }
 
     .alert-banner {
-      display: none;
-      text-align: center;
-      padding: 10px 16px;
-      border-radius: var(--radius);
-      font-size: 14px;
-      font-weight: 500;
-      margin-bottom: 1rem;
+      display: none; text-align: center; padding: 10px 16px;
+      border-radius: var(--radius); font-size: 14px; font-weight: 500; margin-bottom: 0.75rem;
     }
     .alert-work { background: var(--bg-success); color: var(--text-success); }
     .alert-rest { background: var(--bg-warning); color: var(--text-warning); }
     .alert-done { background: var(--bg-info); color: var(--text-info); }
 
-    .big-clock {
-      text-align: center;
-      font-size: 64px;
-      font-weight: 500;
-      letter-spacing: 3px;
-      color: var(--text);
-      margin: 1.25rem 0 0.25rem;
-      font-family: ui-monospace, "SF Mono", "Courier New", monospace;
+    .phase-header {
+      text-align: center; font-size: 13px; font-weight: 500; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--text-tertiary); margin-bottom: 0.25rem; min-height: 18px;
     }
 
-    .phase-label {
-      text-align: center;
-      font-size: 14px;
-      color: var(--text-secondary);
-      margin-bottom: 0.5rem;
-      min-height: 20px;
+    .big-clock {
+      text-align: center; font-size: 72px; font-weight: 500; letter-spacing: 3px;
+      color: var(--text); margin: 0 0 0.25rem;
+      font-family: ui-monospace, "SF Mono", "Courier New", monospace;
+      transition: color 0.3s;
     }
+    .big-clock.work { color: var(--text-success); }
+    .big-clock.rest { color: var(--text-warning); }
+
+    .phase-label { text-align: center; font-size: 14px; color: var(--text-secondary); margin-bottom: 0.5rem; min-height: 20px; }
 
     .progress-bar-bg {
-      background: var(--bg-secondary);
-      border-radius: 99px;
-      height: 8px;
-      margin: 0.75rem 0 1.5rem;
-      overflow: hidden;
+      background: var(--bg-secondary); border-radius: 99px;
+      height: 8px; margin: 0.75rem 0 1.5rem; overflow: hidden;
     }
-    .progress-bar-fill {
-      height: 100%;
-      border-radius: 99px;
-      transition: width 0.5s linear, background 0.4s;
-      width: 0%;
-      background: var(--bg-success);
-    }
+    .progress-bar-fill { height: 100%; border-radius: 99px; transition: width 0.5s linear, background 0.4s; width: 100%; }
 
-    .controls {
-      display: flex;
-      gap: 10px;
-      justify-content: center;
-      margin-bottom: 1.5rem;
-    }
+    .controls { display: flex; gap: 10px; justify-content: center; margin-bottom: 1.5rem; }
     button {
-      padding: 10px 28px;
-      font-size: 14px;
-      border: 0.5px solid var(--border-med);
-      border-radius: var(--radius);
-      background: transparent;
-      color: var(--text);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      transition: background 0.15s;
+      padding: 10px 28px; font-size: 14px; border: 0.5px solid var(--border-med);
+      border-radius: var(--radius); background: transparent; color: var(--text);
+      cursor: pointer; display: flex; align-items: center; gap: 6px; transition: background 0.15s;
     }
     button:hover { background: var(--bg-secondary); }
     button:active { transform: scale(0.98); }
     button i { font-size: 16px; }
 
     .log-box {
-      background: var(--bg-secondary);
-      border-radius: var(--radius);
-      border: 0.5px solid var(--border);
-      padding: 0.75rem 1rem;
-      max-height: 150px;
-      overflow-y: auto;
+      background: var(--bg-secondary); border-radius: var(--radius);
+      border: 0.5px solid var(--border); padding: 0.75rem 1rem;
+      max-height: 150px; overflow-y: auto;
     }
-    .log-entry {
-      font-size: 12px;
-      color: var(--text-tertiary);
-      padding: 3px 0;
-      border-bottom: 0.5px solid var(--border);
-    }
+    .log-entry { font-size: 12px; color: var(--text-tertiary); padding: 3px 0; border-bottom: 0.5px solid var(--border); }
     .log-entry:last-child { border-bottom: none; }
     .log-entry.ring { color: var(--text-success); font-weight: 500; }
     .log-entry.done { color: var(--text-info); font-weight: 500; }
 
     @media (max-width: 420px) {
       .card { padding: 1.25rem; }
-      .big-clock { font-size: 48px; }
+      .big-clock { font-size: 52px; }
       .input-row { gap: 8px; }
     }
   </style>
@@ -277,12 +190,13 @@
   <div class="duration-pill">Total session: <span id="duration-display">—</span></div>
 
   <div class="stat-row" id="stat-row" style="display:none;">
-    <div class="stat-card"><div class="stat-val" id="s-rounds">—</div><div class="stat-lbl">reps</div></div>
+    <div class="stat-card"><div class="stat-val" id="s-rounds">—</div><div class="stat-lbl">total reps</div></div>
     <div class="stat-card"><div class="stat-val" id="s-done">0</div><div class="stat-lbl">completed</div></div>
-    <div class="stat-card"><div class="stat-val" id="s-left">—</div><div class="stat-lbl">time left</div></div>
+    <div class="stat-card"><div class="stat-val" id="s-left">—</div><div class="stat-lbl">session left</div></div>
   </div>
 
   <div class="alert-banner" id="alert-banner"></div>
+  <div class="phase-header" id="phase-header"></div>
   <div class="big-clock" id="clock">00:00</div>
   <div class="phase-label" id="phase-label"></div>
   <div class="progress-bar-bg" id="prog-bg" style="display:none;">
@@ -302,8 +216,10 @@
 
 <script>
 let ticker = null, running = false;
-let totalSec = 0, elapsed = 0, intervalSec = 0, restSec = 0;
-let phase = 'work', phaseElapsed = 0, roundsDone = 0, totalRounds = 0;
+let totalSec = 0, sessionElapsed = 0;
+let intervalSec = 0, restSec = 0;
+let phase = 'work', phaseRemaining = 0;
+let roundsDone = 0, totalRounds = 0;
 let audioCtx = null, restMelodyNodes = [], restMelodyTimer = null;
 
 function getAudio() {
@@ -391,7 +307,7 @@ function showAlert(msg, type) {
   el.textContent = msg;
   el.className = 'alert-banner alert-' + type;
   el.style.display = 'block';
-  setTimeout(() => { el.style.display = 'none'; }, 3000);
+  setTimeout(() => { el.style.display = 'none'; }, 2500);
 }
 
 function fmt(s) {
@@ -438,43 +354,43 @@ function addLog(msg, cls) {
 }
 
 function updateUI() {
-  const left = totalSec - elapsed;
-  document.getElementById('clock').textContent = fmt(left);
-  document.getElementById('s-left').textContent = fmt(left);
-  document.getElementById('s-done').textContent = roundsDone;
   const phaseDur = phase === 'work' ? intervalSec : restSec;
-  const pct = phaseDur > 0 ? Math.min(100, phaseElapsed / phaseDur * 100) : 100;
-  const fill = document.getElementById('prog-fill');
-  fill.style.width = pct + '%';
-  fill.style.background = phase === 'work' ? '#639922' : '#ba7517';
+  const pct = phaseDur > 0 ? Math.min(100, (phaseRemaining / phaseDur) * 100) : 0;
+  document.getElementById('clock').textContent = fmt(phaseRemaining);
+  document.getElementById('clock').className = 'big-clock ' + phase;
+  document.getElementById('prog-fill').style.width = pct + '%';
+  document.getElementById('prog-fill').style.background = phase === 'work' ? '#639922' : '#ba7517';
+  document.getElementById('s-left').textContent = fmt(totalSec - sessionElapsed);
+  document.getElementById('s-done').textContent = roundsDone;
+  document.getElementById('phase-header').textContent = phase === 'work'
+    ? 'Work — rep ' + (roundsDone + 1) + ' of ' + totalRounds : 'Rest';
   document.getElementById('phase-label').textContent = phase === 'work'
-    ? 'Work — rep ' + (roundsDone + 1) + ' of ' + totalRounds
-    : 'Rest — next rep in ' + fmt(restSec - phaseElapsed);
+    ? 'Keep going!' : 'Next rep in ' + fmt(phaseRemaining);
 }
 
 function tick() {
-  elapsed++; phaseElapsed++;
-  const phaseDur = phase === 'work' ? intervalSec : restSec;
-  if (phaseElapsed >= phaseDur) {
+  phaseRemaining--;
+  sessionElapsed++;
+  if (phaseRemaining <= 0) {
     if (phase === 'work') {
       roundsDone++;
       if (roundsDone >= totalRounds) { finishTimer(); return; }
       if (restSec > 0) {
         soundRestStart(); startRestMelody();
         showAlert('Rest! Rep ' + roundsDone + ' done.', 'rest');
-        addLog('🔔 End of rep ' + roundsDone + ' — rest!', 'ring');
-        phase = 'rest'; phaseElapsed = 0;
+        addLog('🔔 Rep ' + roundsDone + ' done — rest!', 'ring');
+        phase = 'rest'; phaseRemaining = restSec;
       } else {
         soundWorkStart();
         showAlert('Go! Rep ' + (roundsDone + 1) + '!', 'work');
         addLog('🔔 Rep ' + (roundsDone + 1) + ' — go!', 'ring');
-        phaseElapsed = 0;
+        phaseRemaining = intervalSec;
       }
     } else {
       stopRestMelody(); soundWorkStart();
       showAlert('Go! Rep ' + (roundsDone + 1) + '!', 'work');
       addLog('🔔 Rep ' + (roundsDone + 1) + ' — go!', 'ring');
-      phase = 'work'; phaseElapsed = 0;
+      phase = 'work'; phaseRemaining = intervalSec;
     }
   }
   updateUI();
@@ -485,8 +401,10 @@ function finishTimer() {
   stopRestMelody(); soundDone();
   showAlert('Session complete! Great work!', 'done');
   document.getElementById('clock').textContent = '00:00';
+  document.getElementById('clock').className = 'big-clock';
+  document.getElementById('phase-header').textContent = '';
   document.getElementById('phase-label').textContent = 'Session complete! ' + totalRounds + ' reps done.';
-  document.getElementById('prog-fill').style.width = '100%';
+  document.getElementById('prog-fill').style.width = '0%';
   document.getElementById('prog-fill').style.background = '#185fa5';
   addLog('✅ Session complete — ' + totalRounds + ' reps done.', 'done');
   document.getElementById('btn-pause').style.display = 'none';
@@ -495,13 +413,13 @@ function finishTimer() {
 }
 
 function startTimer() {
-  if (!running && elapsed === 0) {
+  if (!running && sessionElapsed === 0) {
     totalRounds = parseInt(document.getElementById('reps').value) || 0;
     intervalSec = getSecs('interval', 'interval-unit');
     restSec = getSecs('rest', 'rest-unit');
     if (totalRounds < 1 || intervalSec < 1) return;
     totalSec = totalRounds * intervalSec + Math.max(0, totalRounds - 1) * restSec;
-    phase = 'work'; phaseElapsed = 0; elapsed = 0; roundsDone = 0;
+    phase = 'work'; phaseRemaining = intervalSec; sessionElapsed = 0; roundsDone = 0;
     document.getElementById('s-rounds').textContent = totalRounds;
     document.getElementById('s-done').textContent = 0;
     document.getElementById('s-left').textContent = fmt(totalSec);
@@ -534,10 +452,12 @@ function pauseTimer() {
 
 function resetTimer() {
   clearInterval(ticker); running = false; stopRestMelody();
-  elapsed = 0; phaseElapsed = 0; roundsDone = 0; phase = 'work';
+  sessionElapsed = 0; phaseRemaining = 0; roundsDone = 0; phase = 'work';
   document.getElementById('clock').textContent = '00:00';
+  document.getElementById('clock').className = 'big-clock';
+  document.getElementById('phase-header').textContent = '';
   document.getElementById('phase-label').textContent = '';
-  document.getElementById('prog-fill').style.width = '0%';
+  document.getElementById('prog-fill').style.width = '100%';
   document.getElementById('alert-banner').style.display = 'none';
   document.getElementById('stat-row').style.display = 'none';
   document.getElementById('prog-bg').style.display = 'none';
