@@ -2,6 +2,26 @@
 
 A free, no-install workout interval timer that runs in any browser. No ads, no subscriptions, no account needed — just open the file and go.
 
+---
+
+## 📱 Add to your iPhone home screen (looks and feels like an app)
+
+RepTimer is designed to live on your iPhone home screen with its own icon — no App Store required.
+
+1. Open the RepTimer link in **Safari** (must be Safari — Chrome and Firefox won't work)
+2. Tap the **Share button** at the bottom of the screen (the box with an arrow pointing up)
+3. Scroll down in the share sheet and tap **"Add to Home Screen"**
+4. The name will already say **RepTimer** — tap **Add** in the top right corner
+
+It will appear on your home screen with a green clock icon, just like any other app. Tapping it opens RepTimer full screen with no browser address bar.
+
+> **Tips for the best experience:**
+> - Keep your screen on while the timer is running — iOS pauses browser timers when the screen locks
+> - Make sure your iPhone's mute switch is off (no orange dot) so you can hear the audio cues
+> - If you update the app and want the new icon, delete the shortcut and re-add it
+
+---
+
 ## What it does
 
 You set three things:
