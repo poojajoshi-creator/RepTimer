@@ -221,9 +221,38 @@ let intervalSec = 0, restSec = 0;
 let phase = 'work', phaseRemaining = 0;
 let roundsDone = 0, totalRounds = 0;
 let audioCtx = null, restMelodyNodes = [], restMelodyTimer = null;
+let audioUnlocked = false;
+
+// iOS Safari requires the AudioContext to be created AND resumed
+// synchronously inside a user gesture (tap). We do this once on
+// the very first button press, before any sound is scheduled.
+function unlockAudio() {
+  if (audioUnlocked) return;
+  try {
+    if (!audioCtx) {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    // Play a silent buffer — this is the magic that satisfies iOS
+    const buf = audioCtx.createBuffer(1, 1, 22050);
+    const src = audioCtx.createBufferSource();
+    src.buffer = buf;
+    src.connect(audioCtx.destination);
+    src.start(0);
+    // Resume in case the context started in suspended state
+    if (audioCtx.state === 'suspended') {
+      audioCtx.resume();
+    }
+    audioUnlocked = true;
+  } catch(e) {}
+}
 
 function getAudio() {
-  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  if (!audioCtx) {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+  if (audioCtx.state === 'suspended') {
+    audioCtx.resume();
+  }
   return audioCtx;
 }
 
@@ -413,6 +442,9 @@ function finishTimer() {
 }
 
 function startTimer() {
+  // Unlock audio on this tap — required for iOS Safari
+  unlockAudio();
+
   if (!running && sessionElapsed === 0) {
     totalRounds = parseInt(document.getElementById('reps').value) || 0;
     intervalSec = getSecs('interval', 'interval-unit');
