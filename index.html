@@ -2,8 +2,21 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>RepTimer — Workout Interval Timer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>RepTimer</title>
+
+  <!-- iOS home screen app behaviour -->
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="RepTimer" />
+
+  <!-- App icon shown on home screen (180x180 is the iOS recommended size) -->
+  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='40' fill='%23639922'/%3E%3Ctext x='90' y='115' font-size='90' text-anchor='middle' font-family='system-ui' fill='white'%3E⏱%3C/text%3E%3C/svg%3E" />
+
+  <!-- Android / generic PWA -->
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="theme-color" content="rgb(99,153,34)" />
+
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -44,15 +57,23 @@
       }
     }
 
+    html, body {
+      height: 100%;
+      /* Prevent iOS rubber-band scrolling */
+      overscroll-behavior: none;
+    }
+
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       background: var(--bg-secondary);
       color: var(--text);
       min-height: 100vh;
+      min-height: -webkit-fill-available;
       display: flex;
       align-items: flex-start;
       justify-content: center;
-      padding: 2rem 1rem;
+      /* Safe area insets for iPhone notch / Dynamic Island */
+      padding: max(2rem, env(safe-area-inset-top)) 1rem max(1rem, env(safe-area-inset-bottom));
     }
 
     .card {
@@ -135,6 +156,7 @@
       padding: 10px 28px; font-size: 14px; border: 0.5px solid var(--border-med);
       border-radius: var(--radius); background: transparent; color: var(--text);
       cursor: pointer; display: flex; align-items: center; gap: 6px; transition: background 0.15s;
+      -webkit-tap-highlight-color: transparent;
     }
     button:hover { background: var(--bg-secondary); }
     button:active { transform: scale(0.98); }
@@ -223,36 +245,23 @@ let roundsDone = 0, totalRounds = 0;
 let audioCtx = null, restMelodyNodes = [], restMelodyTimer = null;
 let audioUnlocked = false;
 
-// iOS Safari requires the AudioContext to be created AND resumed
-// synchronously inside a user gesture (tap). We do this once on
-// the very first button press, before any sound is scheduled.
 function unlockAudio() {
   if (audioUnlocked) return;
   try {
-    if (!audioCtx) {
-      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    }
-    // Play a silent buffer — this is the magic that satisfies iOS
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     const buf = audioCtx.createBuffer(1, 1, 22050);
     const src = audioCtx.createBufferSource();
     src.buffer = buf;
     src.connect(audioCtx.destination);
     src.start(0);
-    // Resume in case the context started in suspended state
-    if (audioCtx.state === 'suspended') {
-      audioCtx.resume();
-    }
+    if (audioCtx.state === 'suspended') audioCtx.resume();
     audioUnlocked = true;
   } catch(e) {}
 }
 
 function getAudio() {
-  if (!audioCtx) {
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  }
-  if (audioCtx.state === 'suspended') {
-    audioCtx.resume();
-  }
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  if (audioCtx.state === 'suspended') audioCtx.resume();
   return audioCtx;
 }
 
@@ -442,9 +451,7 @@ function finishTimer() {
 }
 
 function startTimer() {
-  // Unlock audio on this tap — required for iOS Safari
   unlockAudio();
-
   if (!running && sessionElapsed === 0) {
     totalRounds = parseInt(document.getElementById('reps').value) || 0;
     intervalSec = getSecs('interval', 'interval-unit');
