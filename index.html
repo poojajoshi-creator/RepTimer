@@ -326,7 +326,7 @@ function soundWorkStart() {
       o.type = 'square'; o.frequency.value = freq;
       const t = ctx.currentTime + i * 0.22;
       g.gain.setValueAtTime(0, t);
-      g.gain.linearRampToValueAtTime(0.35, t + 0.01);
+      g.gain.linearRampToValueAtTime(0.5, t + 0.01);
       g.gain.exponentialRampToValueAtTime(0.001, t + 0.18);
       o.start(t); o.stop(t + 0.2);
     });
@@ -341,7 +341,7 @@ function soundRestStart() {
       o.connect(g); g.connect(ctx.destination);
       o.type = 'sine'; o.frequency.value = freq;
       const t = ctx.currentTime + i * 0.85;
-      g.gain.setValueAtTime(0.4, t);
+      g.gain.setValueAtTime(0.55, t);
       g.gain.exponentialRampToValueAtTime(0.001, t + 0.7);
       o.start(t); o.stop(t + 0.75);
     });
@@ -356,18 +356,28 @@ function startRestMelody() {
     if (phase !== 'rest' || !running) return;
     try {
       const ctx = getAudio();
-      const o = ctx.createOscillator(), g = ctx.createGain();
-      o.connect(g); g.connect(ctx.destination);
-      o.type = 'sine'; o.frequency.value = melody[idx++ % melody.length];
-      g.gain.setValueAtTime(0, ctx.currentTime);
-      g.gain.linearRampToValueAtTime(0.18, ctx.currentTime + 0.05);
-      g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.55);
-      o.start(ctx.currentTime); o.stop(ctx.currentTime + 0.6);
-      restMelodyNodes.push(o);
+      const freq = melody[idx++ % melody.length];
+      // Main voice — triangle wave, louder
+      const o1 = ctx.createOscillator(), g1 = ctx.createGain();
+      o1.connect(g1); g1.connect(ctx.destination);
+      o1.type = 'triangle'; o1.frequency.value = freq;
+      g1.gain.setValueAtTime(0, ctx.currentTime);
+      g1.gain.linearRampToValueAtTime(0.5, ctx.currentTime + 0.04);
+      g1.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.55);
+      o1.start(ctx.currentTime); o1.stop(ctx.currentTime + 0.6);
+      // Octave-up harmony voice for extra brightness/presence
+      const o2 = ctx.createOscillator(), g2 = ctx.createGain();
+      o2.connect(g2); g2.connect(ctx.destination);
+      o2.type = 'sine'; o2.frequency.value = freq * 2;
+      g2.gain.setValueAtTime(0, ctx.currentTime);
+      g2.gain.linearRampToValueAtTime(0.22, ctx.currentTime + 0.04);
+      g2.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.5);
+      o2.start(ctx.currentTime); o2.stop(ctx.currentTime + 0.55);
+      restMelodyNodes.push(o1, o2);
     } catch(e) {}
-    restMelodyTimer = setTimeout(playNote, 620);
+    restMelodyTimer = setTimeout(playNote, 580);
   }
-  restMelodyTimer = setTimeout(playNote, 1800);
+  restMelodyTimer = setTimeout(playNote, 1500);
 }
 
 function stopRestMelody() {
@@ -385,7 +395,7 @@ function soundDone() {
       const t = ctx.currentTime + i * 0.22;
       const dur = i === 3 ? 1.2 : 0.2;
       o.type = i === 3 ? 'sine' : 'triangle'; o.frequency.value = freq;
-      g.gain.setValueAtTime(0.35, t);
+      g.gain.setValueAtTime(0.5, t);
       g.gain.exponentialRampToValueAtTime(0.001, t + dur);
       o.start(t); o.stop(t + dur + 0.05);
     });
